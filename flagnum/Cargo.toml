@@ -5,5 +5,8 @@ edition = "2021"
 license = "MIT"
 
 [dependencies]
-flagnum-core = { path = "../flagnum-core" }
 flagnum-proc-macro = { path = "../flagnum-proc-macro" }
+serde = { version = "1.0.147", features = ["derive"], optional = true }
+
+[features]
+serde = ["dep:serde", "flagnum-proc-macro/serde"]

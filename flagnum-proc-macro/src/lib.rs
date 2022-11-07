@@ -19,7 +19,6 @@ use syn::{
     parse_str, Type, Visibility, Fields,
 };
 use syn::parse::{Parse, ParseStream};
-use flagnum_core as _;
 
 
 #[proc_macro_attribute]
@@ -68,8 +67,18 @@ impl FlagnumContext {
     fn expand_flag_type(&self) -> TokenStream2 {
         let Self { item: FlagnumEnum { tree, .. }, .. } = self;
         let repr_attr = self.expand_repr_attribute();
+
+        #[cfg(feature = "serde")]
+        let derive_serde = quote! {
+            #[derive(flagnum::serde::Deserialize, flagnum::serde::Serialize)]
+        };
+
+        #[cfg(not(feature = "serde"))]
+        let derive_serde = quote! {};
+
         quote! {
             #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+            #derive_serde
             #repr_attr
             #tree
         }
@@ -99,7 +108,7 @@ impl FlagnumContext {
     fn expand_impls_flag(&self) -> TokenStream2 {
         let Self { name, set_name, .. } = self;
         quote! {
-            impl flagnum_core::Flag for #name {
+            impl flagnum::Flag for #name {
                 type Set = #set_name;
             }
         }
@@ -277,7 +286,7 @@ impl FlagnumContext {
                 #fns_inherent
             }
 
-            impl flagnum_core::Flags for #set_name {
+            impl flagnum::Flags for #set_name {
                 type Item = #name;
 
                 const ITEMS: &'static [#name] = &[#( #name::#variant_names ),*];
@@ -369,10 +378,10 @@ impl FlagnumContext {
 
             impl IntoIterator for #set_name {
                 type Item = #name;
-                type IntoIter = flagnum_core::Iter<Self>;
+                type IntoIter = flagnum::Iter<Self>;
 
                 fn into_iter(self) -> Self::IntoIter {
-                    flagnum_core::Iter::new(self)
+                    flagnum::Iter::new(self)
                 }
             }
         }

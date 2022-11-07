@@ -1,6 +1,5 @@
 [workspace]
 members = [
     "flagnum",
-    "flagnum-core",
     "flagnum-proc-macro",
 ]
