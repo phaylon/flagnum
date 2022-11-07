@@ -154,7 +154,7 @@ impl FlagnumContext {
         }
     }
 
-    fn expand_impl_set_fns(&self, is_inherent: bool) -> TokenStream2 {
+    fn expand_impl_set_shared_fns(&self, is_inherent: bool) -> TokenStream2 {
         let Self { vis, name, repr_type, .. } = self;
         let (prefix, prefix_const) = if is_inherent {
             (quote! { #vis }, quote! { #vis const })
@@ -298,8 +298,8 @@ impl FlagnumContext {
         let variant_names = self.variant_names();
         let full_len = self.item.tree.variants.len();
 
-        let fns_inherent = self.expand_impl_set_fns(true);
-        let fns_trait = self.expand_impl_set_fns(false);
+        let fns_inherent = self.expand_impl_set_shared_fns(true);
+        let fns_trait = self.expand_impl_set_shared_fns(false);
 
         quote! {
             impl #set_name {
