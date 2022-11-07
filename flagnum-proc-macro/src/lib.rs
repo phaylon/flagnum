@@ -424,6 +424,15 @@ impl FlagnumContext {
                     flagnum::Iter::new(self)
                 }
             }
+
+            impl IntoIterator for &#set_name {
+                type Item = #name;
+                type IntoIter = flagnum::Iter<#set_name>;
+
+                fn into_iter(self) -> Self::IntoIter {
+                    flagnum::Iter::new(*self)
+                }
+            }
         }
     }
 
