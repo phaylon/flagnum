@@ -64,18 +64,23 @@ impl FlagnumContext {
         self.item.tree.variants.iter().map(|variant| &variant.ident)
     }
 
+    fn expand_flag_type_serde_derive(&self) -> TokenStream2 {
+        if cfg!(feature = "serde") {
+            quote! {
+                #[derive(
+                    flagnum::feature_serde::dep::Deserialize,
+                    flagnum::feature_serde::dep::Serialize,
+                )]
+            }
+        } else {
+            quote! {}
+        }
+    }
+
     fn expand_flag_type(&self) -> TokenStream2 {
         let Self { item: FlagnumEnum { tree, .. }, .. } = self;
         let repr_attr = self.expand_repr_attribute();
-
-        #[cfg(feature = "serde")]
-        let derive_serde = quote! {
-            #[derive(flagnum::serde::Deserialize, flagnum::serde::Serialize)]
-        };
-
-        #[cfg(not(feature = "serde"))]
-        let derive_serde = quote! {};
-
+        let derive_serde = self.expand_flag_type_serde_derive();
         quote! {
             #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
             #derive_serde
@@ -86,11 +91,46 @@ impl FlagnumContext {
 
     fn expand_set_type(&self) -> TokenStream2 {
         let Self { vis, set_name, repr_type, .. } = self;
+        let impls_serde = self.expand_set_type_serde_impls();
         quote! {
             #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
             #vis struct #set_name {
                 items: #repr_type,
             }
+
+            #impls_serde
+        }
+    }
+
+    fn expand_set_type_serde_impls(&self) -> TokenStream2 {
+        let Self { set_name, .. } = self;
+        if cfg!(feature = "serde") {
+            quote! {
+                impl<'de> flagnum::feature_serde::dep::Deserialize<'de> for #set_name {
+                    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+                    where
+                        D: flagnum::feature_serde::dep::Deserializer<'de>,
+                    {
+                        deserializer.deserialize_seq(flagnum::feature_serde::SetVisitor::new())
+                    }
+                }
+
+                impl flagnum::feature_serde::dep::Serialize for #set_name {
+                    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+                    where
+                        S: flagnum::feature_serde::dep::Serializer,
+                    {
+                        use flagnum::feature_serde::dep::ser::SerializeSeq;
+                        let mut seq = serializer.serialize_seq(Some(self.len()))?;
+                        for item in *self {
+                            seq.serialize_element(&item)?;
+                        }
+                        seq.end()
+                    }
+                }
+            }
+        } else {
+            quote! {}
         }
     }
 

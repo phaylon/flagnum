@@ -7,7 +7,7 @@ pub use flagnum_proc_macro::*;
 
 #[cfg(feature = "serde")]
 #[doc(hidden)]
-pub use serde;
+pub mod feature_serde;
 
 pub trait Flag: Sized
     + std::fmt::Debug
