@@ -46,7 +46,7 @@ impl FlagnumContext {
         })
     }
 
-    fn variants(&self) -> (usize, impl Iterator<Item = &Ident> + '_) {
+    fn variants(&self) -> (usize, impl Iterator<Item = &Ident> + Clone + '_) {
         let variants = &self.body.item_enum.variants;
         (variants.len(), variants.iter().map(|variant| &variant.ident))
     }
@@ -68,10 +68,15 @@ impl FlagnumContext {
         for (offset, variant) in item.variants.iter_mut().enumerate() {
             set_variant_offset(variant, offset);
         }
+        let repr = if item.variants.is_empty() {
+            None
+        } else {
+            Some(quote! { #[repr(#repr_type)] })
+        };
         quote! {
             #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
             #serde_derive
-            #[repr(#repr_type)]
+            #repr
             #item
             #flag_impl
         }
@@ -152,7 +157,7 @@ impl FlagnumContext {
             quote! {
                 #(#attrs)*
                 #vis const #group: Self = Self {
-                    items: #( #members )|*,
+                    items: 0 #( | #members )*,
                 };
             }
         }).collect()
@@ -330,16 +335,17 @@ impl FlagnumContext {
     fn build_set_type_flags_impl(&self) -> TokenStream {
         let Self { set_type, item_type, repr_type, .. } = self;
         let common_fns = self.build_set_type_common_const_fns(true);
-        let (full_len, variants) = self.variants();
+        let (_, variants) = self.variants();
+        let variants_items = variants.clone();
         quote! {
             impl flagnum::Flags for #set_type {
                 type Item = #item_type;
 
                 const EMPTY: Self = Self { items: 0 };
                 const FULL: Self = Self {
-                    items: #repr_type::MAX >> (#repr_type::BITS - #full_len as u32),
+                    items: 0 #( | #item_type::#variants as #repr_type )*,
                 };
-                const ITEMS: &'static [#item_type] = &[#( #item_type::#variants ),*];
+                const ITEMS: &'static [#item_type] = &[#( #item_type::#variants_items ),*];
 
                 #common_fns
 
