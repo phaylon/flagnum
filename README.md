@@ -1,0 +1,36 @@
+Groupable sets of unit-only enums based a bitset implementation.
+
+# Description
+
+* Transforms Rust enums and generates corresponding set types, so the set types
+  can be extended with associated items and have foreign traits implemented on it.
+* Allows grouping of variants into a constant set via the `groups` attributes.
+* Provides a set API via the `Flags` trait, allowing generic operations on sets and
+  items.
+* Automatically chooses the smallest possible represenation given the number of
+  variants.
+* Allows adding documentation to the generated set type and group constants.
+* Comes with a set oriented serde implementation, available via the `serde` feature.
+  The set type serializes and deserializes like a sequence of values belonging to the
+  set.
+* Provides a set of the set API functions as inherent `const` variants on the
+  generated set types, to allow for easier use in constant contexts.
+* Auto-implements a number of standard library traits for enums and set types.
+* Uses the enum discriminant value to store the set bit information.
+
+# Example
+
+```rust
+#[flagnum::flag(MySet, groups(GROUP_1, GROUP_2))]
+pub enum MyItem {
+    ItemA,
+    #[groups(GROUP_1)]
+    ItemB,
+    #[groups(GROUP_1, GROUP_2)]
+    ItemC,
+}
+use flagnum::Flags;
+assert!(! MySet::GROUP_1.contains(MyItem::ItemA));
+assert!(MySet::GROUP_1.contains(MyItem::ItemB));
+assert!(MySet::GROUP_1.contains(MySet::GROUP_2));
+```
