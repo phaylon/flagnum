@@ -1,4 +1,4 @@
-Groupable sets of unit-only enums based a bitset implementation.
+Groupable sets of unit-only enums based on a bitset implementation.
 
 # Description
 
