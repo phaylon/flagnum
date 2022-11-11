@@ -3,7 +3,7 @@ use flagnum::Flags;
 /// Enum documentation: An example enum for [`Weekdays`].
 #[flagnum::flag(
     /// Set documentation: A set type for [`Weekday`] values.
-    Weekdays,
+    #[derive(Default)] Weekdays,
     groups(
         /// Group documentation: Contains all [`Weekday`]
         /// values that fall on the weekend.

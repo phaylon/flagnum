@@ -21,7 +21,7 @@ Groupable sets of unit-only enums based on a bitset implementation.
 # Example
 
 ```rust
-#[flagnum::flag(MySet, groups(GROUP_1, GROUP_2))]
+#[flagnum::flag(#[derive(Default)] MySet, groups(GROUP_1, GROUP_2))]
 pub enum MyItem {
     ItemA,
     #[groups(GROUP_1)]
@@ -29,6 +29,7 @@ pub enum MyItem {
     #[groups(GROUP_1, GROUP_2)]
     ItemC,
 }
+
 use flagnum::Flags;
 assert!(! MySet::GROUP_1.contains(MyItem::ItemA));
 assert!(MySet::GROUP_1.contains(MyItem::ItemB));
