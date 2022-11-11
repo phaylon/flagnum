@@ -4,25 +4,32 @@
 
 #![doc = include_str!("../../README.md")]
 //!
-//! See the [`crate::example`] module for a detailed usage and generated API example.
+//! See the [`example`](crate::example) module for a detailed usage and generated API example.
 //!
-//! See the [`crate::Flags`] trait for examples of the trait API.
+//! See the [`Flags`] trait for examples of the trait API.
 //!
 //! # Standard Library Traits
 //!
-//! The following traits are automatically implemented for both enum and set types:
+//! These traits are automatically implemented for both enum and set types:
 //!
-//! * [`Debug`](std::fmt::Debug)
+//! * [`Debug`](std::fmt::Debug) with a sequence based implementation for sets
 //! * [`Clone`] and [`Copy`]
 //! * [`PartialEq`] and [`Eq`]
 //! * [`PartialOrd`] and [`Ord`]
 //! * [`Hash`](std::hash::Hash)
+//!
+//! These traits are also automatically implemented for set types:
+//!
+//! * [`From`] for various types
+//! * [`FromIterator`] for anything that can be turned into a set
+//! * [`IntoIterator`]
+//! * [`Extend`] for iterators over anything that can be turned into a set
 
 /// Entry point for enum and set type code generation.
 ///
 /// See the general [flagnum] documentation for general usage information.
 ///
-/// See the [`crate::example`] module for an example of using this attribute.
+/// See the [`example`](crate::example) module for an example of using this attribute.
 pub use flagnum_proc_macro::flag;
 
 extern crate self as flagnum;
