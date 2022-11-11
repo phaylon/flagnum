@@ -11,3 +11,9 @@
 
 mod weekdays;
 pub use weekdays::*;
+
+#[test]
+fn weekdays_example() {
+    assert!(Weekdays::default().is_empty());
+    assert_eq!(Weekday::default(), Weekday::Monday);
+}

@@ -10,8 +10,10 @@ use flagnum::Flags;
         WEEKEND,
     ),
 )]
+#[derive(Default)]
 pub enum Weekday {
     /// Variant documentation: Monday..
+    #[default]
     Monday,
     /// Tuesday..
     Tuesday,
