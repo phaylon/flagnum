@@ -107,8 +107,8 @@ impl FlagnumContext {
 
     fn build_set_type(&self) -> TokenStream {
         let Self {
-            vis, set_type, repr_type,
-            decl: FlagnumDecl { set: WithAttrs { attrs, .. }, .. },
+            set_type, repr_type,
+            decl: FlagnumDecl { set: WithAttrs { attrs, vis, .. }, .. },
             ..
         } = self;
         let serde_impls = self.build_set_type_serde_impls();
@@ -142,12 +142,12 @@ impl FlagnumContext {
 
     fn build_set_type_constant_groups(&self) -> TokenStream {
         let Self {
-            vis, repr_type, item_type,
+            repr_type, item_type,
             body: FlagnumEnum { grouped, .. },
             decl: FlagnumDecl { groups, .. },
             ..
         } = self;
-        groups.iter().map(|WithAttrs { value: group, attrs }| {
+        groups.iter().map(|WithAttrs { value: group, attrs, vis }| {
             let members = grouped
                 .get(group)
                 .map(|members| members.as_slice())

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use syn::punctuated::Punctuated;
-use syn::{Attribute, parenthesized, Token, Ident, ItemEnum, Fields, Error, parse2};
+use syn::{Attribute, parenthesized, Token, Ident, ItemEnum, Fields, Error, parse2, Visibility};
 use syn::parse::{Parse, ParseStream};
 
 
@@ -151,6 +151,7 @@ where
 pub struct WithAttrs<T> {
     pub value: T,
     pub attrs: Vec<Attribute>,
+    pub vis: Option<Visibility>,
 }
 
 impl<T> Parse for WithAttrs<T>
@@ -159,7 +160,12 @@ where
 {
     fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
         let attrs = input.call(Attribute::parse_outer)?;
+        let vis = if input.peek(Token![pub]) {
+            Some(input.parse()?)
+        } else {
+            None
+        };
         let value = input.parse()?;
-        Ok(Self { value, attrs })
+        Ok(Self { vis, value, attrs })
     }
 }
