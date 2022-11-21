@@ -21,7 +21,10 @@ Groupable sets of unit-only enums based on a bitset implementation.
 # Example
 
 ```rust
-#[flagnum::flag(#[derive(Default)] pub MySet, groups(pub GROUP_1, pub GROUP_2))]
+#[flagnum::flag(
+    #[derive(Default)] pub MySet,
+    groups(pub GROUP_1, pub GROUP_2),
+)]
 pub enum MyItem {
     ItemA,
     #[groups(GROUP_1)]
