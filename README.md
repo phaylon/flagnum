@@ -9,12 +9,10 @@ Groupable sets of unit-only enums based on a bitset implementation.
   items.
 * Automatically chooses the smallest possible represenation given the number of
   variants.
-* Allows adding documentation to the generated set type and group constants.
+* Allows adding attributes and documentation to the generated set type and group constants.
 * Comes with a set oriented serde implementation, available via the `serde` feature.
   The set type serializes and deserializes like a sequence of values belonging to the
   set.
-* Provides a set of the set API functions as inherent `const` variants on the
-  generated set types, to allow for easier use in constant contexts.
 * Auto-implements a number of standard library traits for enums and set types.
 * Uses the enum discriminant value to store the set bit information.
 
